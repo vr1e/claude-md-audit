@@ -70,6 +70,8 @@ As a skill — works with Claude Code, Cursor, and any agent the [`skills`](http
 npx skills add vr1e/claude-md-audit
 ```
 
+Listed at [skills.sh/vr1e/claude-md-audit](https://skills.sh/vr1e/claude-md-audit/agents-md-audit).
+
 As a Claude Code plugin — also installs the `/revise-agents-md` command:
 
 ```
