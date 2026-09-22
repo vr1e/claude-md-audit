@@ -111,4 +111,4 @@ Before finalizing:
 - [ ] No new line contradicts an existing line
 - [ ] Known traps in this repo are covered
 - [ ] Root file got shorter, or longer only by trap/gotcha lines
-- [ ] CLAUDE.md is a pointer (`@AGENTS.md`), not a duplicate
+- [ ] If a CLAUDE.md exists, it starts with `@AGENTS.md` and holds only Claude-specific lines — no bare pointer, no duplicate

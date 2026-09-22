@@ -3,7 +3,7 @@ description: Update AGENTS.md with learnings from this session
 allowed-tools: Read, Edit, Write, Glob
 ---
 
-Review this session for learnings that would help future agent sessions in this codebase, and fold them into **AGENTS.md** (the canonical context file — CLAUDE.md should only be a pointer containing `@AGENTS.md`).
+Review this session for learnings that would help future agent sessions in this codebase, and fold them into **AGENTS.md** (the canonical context file; Claude Code reads it directly, so a CLAUDE.md exists only for Claude-specific guidance and must start with `@AGENTS.md`).
 
 ## Step 1: Reflect
 
@@ -23,9 +23,9 @@ Root AGENTS.md only gets learnings relevant to *most* sessions. A domain-scoped 
 
 Use Glob to locate the context files: patterns `AGENTS.md`, `CLAUDE.md`, `CLAUDE.local.md`, plus `*/AGENTS.md` and `*/CLAUDE.md` for nested ones (skip `node_modules`).
 
-- Learnings go to `AGENTS.md`. If only a full CLAUDE.md exists, offer to migrate it: content → AGENTS.md, CLAUDE.md → `# CLAUDE.md` + `@AGENTS.md` pointer.
-- Personal/local-only notes go to `CLAUDE.local.md` (gitignored).
-- Claude-specific items (skills, hooks, permissions) go under `## Claude Code` in CLAUDE.md.
+- Learnings go to `AGENTS.md`. If only a full CLAUDE.md exists, offer to migrate it: content → AGENTS.md; delete CLAUDE.md, or keep just `@AGENTS.md` + any Claude-specific lines.
+- Personal/local-only notes go to `CLAUDE.local.md` (gitignored). If the repo has no CLAUDE.md, start it with `@AGENTS.md` — a CLAUDE.local.md on its own makes Claude Code skip AGENTS.md.
+- Claude-specific items (skills, hooks, permissions) go under `## Claude Code` in CLAUDE.md, creating it with `@AGENTS.md` as its first line if needed.
 
 ## Step 3: Draft, then verify
 

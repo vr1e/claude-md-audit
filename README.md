@@ -6,19 +6,17 @@ A personalized rebuild of Anthropic's official [claude-md-management](https://gi
 
 ## Philosophy
 
-- **AGENTS.md is the canonical context file.** CLAUDE.md is a thin pointer:
+- **AGENTS.md is the canonical context file — and usually the only one.** Claude Code reads it directly (v2.1.277+), as do Cursor, Codex, and the rest. A CLAUDE.md exists only for Claude-specific guidance, and then it must start with `@AGENTS.md`, because a CLAUDE.md's presence makes Claude Code stop reading AGENTS.md on its own:
 
   ```markdown
-  # CLAUDE.md
-
   @AGENTS.md
 
   ## Claude Code
 
-  (anything Claude-specific; omit if empty)
+  (Claude-specific guidance only)
   ```
 
-  The skill creates the pointer when it's missing and migrates full CLAUDE.md files into this layout.
+  The skill migrates full CLAUDE.md files into AGENTS.md and flags leftover `@AGENTS.md`-only pointers for removal, keeping them where a session still can't read AGENTS.md directly (Bedrock/Vertex/Foundry, or Claude Code older than 2.1.277).
 
 - **Every claim is verified against the code**, not against `package.json` or an old README. A false claim (e.g. "uses Preact" when the aliasing is commented out) is worse than no claim.
 - **Derivable content is cut**: no mirrors of `package.json` scripts, no tech-stack recitals, no directory maps. Only the non-derivable residue stays — what an umbrella script chains, what CI gates on, naming traps, gotchas.
@@ -46,7 +44,7 @@ The short version: a context file earns its tokens by holding what an agent **ca
 |---|---|---|
 | **Purpose** | Audit AGENTS.md against the codebase, fix false claims, cut filler, relocate scoped rules | Capture verified session learnings into AGENTS.md |
 | **Trigger** | "audit my AGENTS.md / CLAUDE.md" | End of session |
-| **Typical outcome** | A shorter, truer file (plus the pointer CLAUDE.md) | A few trap/gotcha lines added, stale lines removed |
+| **Typical outcome** | A shorter, truer AGENTS.md, and no redundant CLAUDE.md | A few trap/gotcha lines added, stale lines removed |
 
 The skill classifies every line as false / aspirational / derivable / relocatable / earned, reports before editing, and always states a layout action. See `skills/agents-md-audit/references/` for the quality criteria, templates, and update guidelines.
 
@@ -56,7 +54,7 @@ Claude Code's built-in [`/doctor`](https://code.claude.com/docs/en/commands) ove
 
 This skill is narrower, and differs in three ways:
 
-- **AGENTS.md is the target.** `/doctor` keeps guidance in CLAUDE.md and nested CLAUDE.md files. This skill makes AGENTS.md canonical and CLAUDE.md a one-line pointer, so Cursor, Codex, and anything else reading the [open standard](https://agentskills.io) sees the same context.
+- **AGENTS.md is the target.** `/doctor` keeps guidance in CLAUDE.md and nested CLAUDE.md files. This skill makes AGENTS.md canonical, with CLAUDE.md reduced to Claude-specific residue or removed, so Cursor, Codex, and anything else reading the [open standard](https://agents.md) sees the same context as Claude Code.
 - **It asks whether claims are *true*, not just whether they're needed.** Derivability and accuracy are different axes. `/doctor`'s trim is about context cost; this skill re-opens the code behind every surviving line, and a false claim is the highest-priority fix.
 - **It runs outside Claude Code.** Installed through the `skills` CLI, it works in any agent that supports skills. `/doctor` is Claude Code only.
 
@@ -100,7 +98,7 @@ skills/agents-md-audit/
 ├── SKILL.md                        # the audit skill
 └── references/
     ├── quality-criteria.md         # the false / derivable / relocatable / earned classification
-    ├── templates.md                # slim AGENTS.md, CLAUDE.md pointer, relocated-doc templates
+    ├── templates.md                # slim AGENTS.md, Claude-specific CLAUDE.md, relocated-doc templates
     └── update-guidelines.md        # add/don't-add criteria for session learnings
 commands/
 └── revise-agents-md.md             # /revise-agents-md

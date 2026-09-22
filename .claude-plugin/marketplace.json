@@ -8,7 +8,7 @@
     {
       "name": "agents-md-audit",
       "source": "./",
-      "description": "Keep AGENTS.md slim, verified, and worth its context cost (with CLAUDE.md as an @AGENTS.md pointer): audit claims against the codebase, cut derivable filler, relocate domain-scoped rules, and capture session learnings via /revise-agents-md."
+      "description": "Keep AGENTS.md slim, verified, and worth its context cost (no CLAUDE.md unless there is Claude-specific guidance): audit claims against the codebase, cut derivable filler, relocate domain-scoped rules, and capture session learnings via /revise-agents-md."
     }
   ]
 }

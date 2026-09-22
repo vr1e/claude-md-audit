@@ -10,29 +10,30 @@ Audit and improve agent context files so they are **slim, verified, and worth th
 
 ## File layout this skill enforces
 
-- **`AGENTS.md`** is the canonical context file. All project guidance lives here.
-- **`CLAUDE.md`** is a thin pointer that imports it. This isn't just tidiness: Claude Code reads `CLAUDE.md`, not `AGENTS.md` — the pointer is what makes AGENTS.md load at all (and it's the layout the official memory docs recommend for repos shared with other coding agents):
+- **`AGENTS.md`** is the canonical context file. All project guidance lives here. It is the one file every coding agent reads — Cursor, Codex, and Claude Code, which since v2.1.277 reads `AGENTS.md`, `.claude/AGENTS.md`, and nested `AGENTS.md` files directly when the project has no `CLAUDE.md`.
+- **`CLAUDE.md` exists only when there is Claude-specific guidance** (skills, hooks, permissions, plan-mode rules). When it exists it must start with `@AGENTS.md`: Claude Code stops reading `AGENTS.md` on its own the moment a `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` is present in or above the working directory, so the import is what keeps the shared file loaded.
 
   ```markdown
-  # CLAUDE.md
-
   @AGENTS.md
 
   ## Claude Code
 
-  (only Claude-specific guidance, if any — otherwise omit this section)
+  - <Claude-specific instruction>
   ```
 
-  Enforce this layout in every audit, whatever the starting state:
+- **A bare pointer** — a `CLAUDE.md` holding nothing but `@AGENTS.md` — is a leftover from before native support. It is harmless (Claude never reads `AGENTS.md` twice) but it is a file kept alive for no gain, so propose removing it. Keep it when the user says some of their sessions can't read `AGENTS.md` directly: Claude Code older than 2.1.277, sessions on Bedrock/Vertex/Foundry or with telemetry disabled, or a `CLAUDE.local.md` in use.
+
+  Apply this whatever the starting state:
 
   | Starting state | Action |
   |---|---|
-  | AGENTS.md only | Audit it, **and create the pointer CLAUDE.md** |
-  | Full CLAUDE.md only | Migrate content → AGENTS.md, replace CLAUDE.md with the pointer |
-  | Both, duplicated | AGENTS.md becomes canonical, CLAUDE.md becomes the pointer |
-  | Neither | Build a slim AGENTS.md from *verified traps actually found*, plus the pointer. If the repo has no traps, a near-empty file (one-line description + package manager if non-npm + non-obvious build command) is the correct output — never pad to look complete. |
+  | AGENTS.md only | Audit it. Create nothing else. |
+  | AGENTS.md + bare pointer CLAUDE.md | Audit AGENTS.md; propose deleting the pointer (see the keep conditions above) |
+  | Full CLAUDE.md only | Migrate content → AGENTS.md. Delete CLAUDE.md, or reduce it to `@AGENTS.md` + the Claude-specific residue if there is any |
+  | Both, duplicated | AGENTS.md becomes canonical; CLAUDE.md is deleted or reduced the same way |
+  | Neither | Build a slim AGENTS.md from *verified traps actually found*. If the repo has no traps, a near-empty file (one-line description + package manager if non-npm + non-obvious build command) is the correct output — never pad to look complete. |
 
-  Never maintain the same content in both files. Creating the pointer CLAUDE.md is part of the standard output, not an optional extra — include it in the Phase 4 report.
+  Never maintain the same content in both files, and never create a CLAUDE.md that has nothing Claude-specific to say. State the layout action in the Phase 4 report even when it is "no change".
 
 ## Core principle
 
@@ -46,7 +47,7 @@ Every line is loaded into every session's context. A line earns its place only i
 find . -maxdepth 3 \( -name "AGENTS.md" -o -name "CLAUDE.md" -o -name "CLAUDE.local.md" \) -not -path "*/node_modules/*" 2>/dev/null | head -50
 ```
 
-Note which layout the repo uses (AGENTS.md + pointer, CLAUDE.md only, both, neither).
+Note which layout the repo uses (AGENTS.md only, AGENTS.md + bare pointer, CLAUDE.md only, both, neither). `.claude/AGENTS.md` and `.claude/CLAUDE.md` count the same as their root counterparts.
 
 ### Phase 2: Verify every claim
 
@@ -101,7 +102,7 @@ Output the report **before** making any edits:
 - <the lines that earn their place>
 
 ### Structure
-- <AGENTS.md/CLAUDE.md layout action per the table above — always state one, e.g. "create pointer CLAUDE.md">
+- <layout action per the table above — always state one, e.g. "AGENTS.md only, nothing to change", "delete bare pointer CLAUDE.md", "migrate CLAUDE.md → AGENTS.md and delete it">
 
 Estimated size: <current lines> → <proposed lines>
 ```
@@ -113,13 +114,13 @@ After user approval:
 1. Check `git status` first — if the context files have uncommitted changes, suggest stashing (or committing) them before editing so the user can review the audit as a clean diff (and revert it wholesale if needed).
 2. Fix false claims, cut filler, add missing traps in AGENTS.md.
 3. Relocate scoped content to its destination docs/skills and replace it with one-line breadcrumbs — use the relocated-doc template and consolidation rules in [references/templates.md](references/templates.md).
-4. Apply the layout action from the table above — including **creating the pointer CLAUDE.md when it doesn't exist**.
+4. Apply the layout action from the table above. If a CLAUDE.md survives, its first line is `@AGENTS.md` — otherwise Claude Code silently stops reading AGENTS.md.
 5. **Final derivability sweep**: reread the proposed AGENTS.md section by section and delete any survivor an agent could get from one `ls` or one Read of `package.json`/`README.md` (directory maps, test-stack recitals, "deployed on X" lines). Filler tends to survive the first pass in slimmed-down form.
 6. Show the resulting files — AGENTS.md should usually be *shorter* than before. If your edit made it longer without adding trap/gotcha content, reconsider.
 
 ## Templates
 
-See [references/templates.md](references/templates.md) for the slim AGENTS.md template and the CLAUDE.md pointer.
+See [references/templates.md](references/templates.md) for the slim AGENTS.md template and the Claude-specific CLAUDE.md.
 
 ## Litmus tests for each line
 

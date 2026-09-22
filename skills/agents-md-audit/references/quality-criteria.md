@@ -67,5 +67,6 @@ Also always check for **missing EARNED content**: scan the repo for confusable n
 - Referenced paths that don't exist
 - Contradicting instructions (usually added by different developers over time) — surface the pair, make the user pick
 - Domain-scoped rule blocks in the root (TS conventions, testing patterns) — relocate, don't keep or delete
-- Same content in both CLAUDE.md and AGENTS.md (should be pointer + canonical)
+- Same content in both CLAUDE.md and AGENTS.md — AGENTS.md is canonical; CLAUDE.md holds only `@AGENTS.md` plus Claude-specific lines, or doesn't exist
+- A CLAUDE.md next to an AGENTS.md that doesn't start with `@AGENTS.md` — Claude Code is silently ignoring AGENTS.md
 - File longer than ~80 lines — almost always contains derivable filler or relocatable content

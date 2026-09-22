@@ -1,2 +1,5 @@
 .DS_Store
 .claude/
+
+# skill-creator eval workspace
+skills/*-workspace/

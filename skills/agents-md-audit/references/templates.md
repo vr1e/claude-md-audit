@@ -1,10 +1,10 @@
 # Templates
 
-## CLAUDE.md — thin pointer (the only CLAUDE.md this skill produces)
+## CLAUDE.md — only when there is Claude-specific guidance
+
+Claude Code reads `AGENTS.md` directly (v2.1.277+), so the default layout has no `CLAUDE.md` at all. Create one only for guidance that is Claude-specific — skills, hooks, permissions, plan-mode rules — and start it with the import, because as soon as a `CLAUDE.md` exists Claude Code reads it *instead of* `AGENTS.md`:
 
 ```markdown
-# CLAUDE.md
-
 @AGENTS.md
 
 ## Claude Code
@@ -12,7 +12,7 @@
 - <Claude-specific instruction, e.g. skill/hook/permission guidance>
 ```
 
-Omit the `## Claude Code` section entirely if there's nothing Claude-specific. The whole file can be as short as two lines (`# CLAUDE.md` + `@AGENTS.md`).
+A `CLAUDE.md` that would hold only `@AGENTS.md` should not be created. If one already exists it is a deletion candidate — see the keep conditions in SKILL.md.
 
 ## AGENTS.md — slim template
 
