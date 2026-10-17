@@ -16,11 +16,13 @@ A personalized rebuild of Anthropic's official [claude-md-management](https://gi
   (Claude-specific guidance only)
   ```
 
-  The skill migrates full CLAUDE.md files into AGENTS.md and flags leftover `@AGENTS.md`-only pointers for removal, keeping them where a session still can't read AGENTS.md directly (Bedrock/Vertex/Foundry, or Claude Code older than 2.1.277).
+  The skill migrates full CLAUDE.md files into AGENTS.md and flags leftover `@AGENTS.md`-only pointers for removal, keeping them where a session still can't read AGENTS.md directly (Claude Code older than 2.1.277, or older than 2.1.281 on Bedrock or with telemetry off; the built-in AGENTS.md plugin disabled; a `CLAUDE.local.md` in use).
+
+- **It checks what actually reaches Claude.** A CLAUDE.md above the repo or inside a package silently turns off AGENTS.md; an `@docs/…` breadcrumb loads the very doc it was meant to defer; `.claude/rules/` files load next to AGENTS.md unseen. The audit looks for all three.
 
 - **Every claim is verified against the code**, not against `package.json` or an old README. A false claim (e.g. "uses Preact" when the aliasing is commented out) is worse than no claim.
 - **Derivable content is cut**: no mirrors of `package.json` scripts, no tech-stack recitals, no directory maps. Only the non-derivable residue stays — what an umbrella script chains, what CI gates on, naming traps, gotchas.
-- **Domain-scoped rules are relocated**, not kept or deleted: TypeScript conventions, testing patterns etc. move to `docs/<DOMAIN>.md` with a one-line breadcrumb (progressive disclosure). The root bar is *undiscoverable AND globally relevant*.
+- **Domain-scoped rules are relocated**, not kept or deleted: a directory's rules move to a nested AGENTS.md there, cross-cutting ones (TypeScript conventions, testing patterns) to `docs/<DOMAIN>.md` with a one-line breadcrumb that names the task it serves (progressive disclosure). The root bar is *undiscoverable AND globally relevant*.
 - **No aspirational filler**: security/quality posture statements are deleted unless they point to actual enforcement code.
 - **Near-empty is a valid outcome.** If a repo has no traps, the correct AGENTS.md is a few lines — never padded to look complete.
 
@@ -46,16 +48,16 @@ The short version: a context file earns its tokens by holding what an agent **ca
 | **Trigger** | "audit my AGENTS.md / CLAUDE.md" | End of session |
 | **Typical outcome** | A shorter, truer AGENTS.md, and no redundant CLAUDE.md | A few trap/gotcha lines added, stale lines removed |
 
-The skill classifies every line as false / aspirational / derivable / relocatable / earned, reports before editing, and always states a layout action. See `skills/agents-md-audit/references/` for the quality criteria, templates, and update guidelines.
+The skill classifies every line as false / filler / derivable / relocatable / earned, checks the file as a whole (contradictions, breadcrumb wording, bans without a target, emphasis, missing traps), reports before editing, and always states a layout action. See `skills/agents-md-audit/references/` for the loading rules, templates, and examples.
 
 ## Why not just `/doctor`?
 
-Claude Code's built-in [`/doctor`](https://code.claude.com/docs/en/commands) overlaps a lot, and it's worth being upfront about that: it trims checked-in CLAUDE.md files by cutting content Claude could derive from the codebase, migrates what remains into skills and nested files that load on demand, and reports before changing anything. If that's all you need, use it — it ships in the box.
+Claude Code's built-in [`/doctor`](https://code.claude.com/docs/en/commands) overlaps a lot, and it's worth being upfront about that. Its checkup trims checked-in CLAUDE.md files by cutting content Claude could derive from the codebase and migrates what remains into skills and nested files that load on demand. `/doctor prompt-audit` (v2.1.283+) goes further: it checks CLAUDE.md, AGENTS.md, rules, skills, and subagents for references to files or commands that don't exist, files that contradict each other, and instructions written for older models. Both report before changing anything. If that's all you need, use them — they ship in the box.
 
 This skill is narrower, and differs in three ways:
 
-- **AGENTS.md is the target.** `/doctor` keeps guidance in CLAUDE.md and nested CLAUDE.md files. This skill makes AGENTS.md canonical, with CLAUDE.md reduced to Claude-specific residue or removed, so Cursor, Codex, and anything else reading the [open standard](https://agents.md) sees the same context as Claude Code.
-- **It asks whether claims are *true*, not just whether they're needed.** Derivability and accuracy are different axes. `/doctor`'s trim is about context cost; this skill re-opens the code behind every surviving line, and a false claim is the highest-priority fix.
+- **AGENTS.md is the target.** `/doctor`'s trim keeps guidance in CLAUDE.md and nested CLAUDE.md files. This skill makes AGENTS.md canonical, with CLAUDE.md reduced to Claude-specific residue or removed, so Cursor, Codex, and anything else reading the [open standard](https://agents.md) sees the same context as Claude Code.
+- **It checks what a claim says, not just that its references exist.** `prompt-audit` catches a path or command that's gone. This skill opens the file a claim is about: "Preact configured in `next.config.ts`" fails when the file exists but the aliasing in it is commented out. A false claim is the highest-priority fix.
 - **It runs outside Claude Code.** Installed through the `skills` CLI, it works in any agent that supports skills. `/doctor` is Claude Code only.
 
 `/doctor` also has no equivalent of `/revise-agents-md` — folding what you learned in a session back into the file.
@@ -97,9 +99,9 @@ At the end of a session, capture what you learned (plugin install only):
 skills/agents-md-audit/
 ├── SKILL.md                        # the audit skill
 └── references/
-    ├── quality-criteria.md         # the false / derivable / relocatable / earned classification
-    ├── templates.md                # slim AGENTS.md, Claude-specific CLAUDE.md, relocated-doc templates
-    └── update-guidelines.md        # add/don't-add criteria for session learnings
+    ├── loading.md                  # how Claude Code loads context files: the AGENTS.md switch, imports, rules
+    ├── templates.md                # slim AGENTS.md, Claude-specific CLAUDE.md, where relocated content goes
+    └── update-guidelines.md        # what earned lines look like, diff format, checklist (shared with /revise-agents-md)
 commands/
 └── revise-agents-md.md             # /revise-agents-md
 ```

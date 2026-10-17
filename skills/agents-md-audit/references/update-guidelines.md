@@ -1,14 +1,8 @@
-# AGENTS.md Update Guidelines
+# What earns a line
 
-## Core principle
+Shared by the audit (Phase 5) and `/revise-agents-md`. Whether a line belongs is decided by the five buckets in SKILL.md Phase 3; this file shows what EARNED lines look like, how to propose a change, and the checklist that closes one. The default direction of a change is **removal or relocation** — successful audits usually make the root file shorter.
 
-AGENTS.md is loaded into every session. Every line costs context; a line earns its place in the root only if it is (a) verified against the code right now, (b) not derivable from an obvious file, (c) would change what an agent does, and (d) relevant to most sessions — the bar is **undiscoverable AND globally relevant**.
-
-Content that passes (a)–(c) but is scoped to one domain gets **relocated**, not kept and not deleted: move it to a referenced doc (`docs/TESTING.md`) or a skill, leave a one-line breadcrumb. Phrase breadcrumbs conversationally — "For TS conventions, see docs/TYPESCRIPT.md" — no ALWAYS/NEVER, no all-caps forcing. Consolidate related topics into one doc rather than fragmenting — a handful of substantial docs beats many tiny ones (see the relocated-doc template and size rules in templates.md).
-
-The default direction of an update is **removal or relocation**. Successful audits usually make the root file shorter.
-
-## What TO add
+## EARNED lines, by kind
 
 ### Traps and disambiguations
 
@@ -31,7 +25,7 @@ Why: what a script *chains* isn't visible from the script list; which check gate
 - SVGs: `import icon from './x.svg?url'` for a URL; plain import gives an SVGR React component
 - API calls go through `src/api/apiClient.ts` (retry + telemetry built in) — don't use fetch directly
 ```
-Caveat: file paths are the fastest-rotting content in the file. A path reference is worth it when the pointer *is* the trap; keep such lines few and verify every path exists before writing it.
+Why: the second line states the target first and keeps the ban only beside it. A path is worth writing when the pointer *is* the trap; verify it exists first, since paths rot fastest.
 
 ### Environment and ordering constraints
 
@@ -46,7 +40,7 @@ Caveat: file paths are the fastest-rotting content in the file. A path reference
 - Dev scripts follow `npm run dev:<app>` — `sf` = storefront, `adm` = admin panel, `mw` = middleware (abbreviations don't match folder names)
 - `dev:*` scripts are non-terminating watchers — validate with `build`/`lint`/`test` instead of running them
 ```
-Why: a 12-row patterned script list is still a package.json mirror. The non-derivable residue is the naming pattern, the abbreviation legend (only when the abbreviations aren't obvious from folder names — that's a naming trap), and which scripts never terminate.
+Why: a 12-row patterned script list is still a package.json mirror. The residue is the naming pattern, the abbreviation legend (only when the abbreviations don't match folder names — that's a naming trap), and which scripts never terminate.
 
 ### Destructive workflow triggers and test asymmetries
 
@@ -54,33 +48,21 @@ Why: a 12-row patterned script list is still a package.json mirror. The non-deri
 - Pushing to `main` with changes to `package.json`, `package-lock.json`, or `packages/app/**` triggers a production deploy (`.github/workflows/production-deploy.yml`)
 - Only `packages/app` has tests — root `npm test` fans out with `--if-present`; the suite needs the framework-env mock in `src/__mocks__/` to run at all
 ```
-Why: for outward-facing workflows (deploy, publish), quote the exact branch + path filters from the workflow file — a paraphrase on the scariest line is as bad as an unverified claim. For tests, the non-derivable part is which workspaces actually have them and what mocks/aliases they need to run; the runner and framework are one Read away and stay out.
+Why: the deploy line quotes the workflow's exact branch and path filters, never a paraphrase. The test line names which workspaces have tests and what they need to run; the runner itself is one Read away.
 
-## What NOT to add
+### Repository etiquette
 
-### 1. Mirrors of package.json / README
+```markdown
+- Branch names come from the ticket title; commit subjects are one line, no body
+```
+Why: every session that commits needs it, and no file path would load it on demand.
 
-Bad: `npm run dev — Start development server` (×10 rows). The agent reads `package.json` and treats it as the source of truth; the mirror only adds drift risk. Keep only the non-derivable residue (see above).
+### Pointers to relocated content
 
-### 2. Tech-stack and architecture recitals
-
-Bad: "Stack: Next.js, TypeScript, styled-components…" or a directory tree. Derivable in one Read/`ls`. Exception: a stack claim that is a *trap* — but then it must be verified (see below).
-
-### 3. Unverified claims
-
-Before writing "X is configured in Y", open Y and confirm. A dependency in `package.json` with its wiring commented out is *not* configured. A false line in AGENTS.md outranks the agent's own reading of the code — it is worse than saying nothing.
-
-### 4. Aspirational / audience-mismatched content
-
-Bad: "Protection against XSS, SQL injection, and OWASP Top 10; regular penetration testing." Not actionable, not verifiable, addressed to auditors. If enforcement exists, point at it: "form input sanitization: `src/helper/validate.ts`". If not, write nothing.
-
-### 5. Generic advice and one-off history
-
-"Write tests", "use meaningful names", "fixed login bug in abc123" — universal or non-recurring; cut.
-
-### 6. Domain-scoped rule blocks (relocate, don't add)
-
-Bad in the root: ten lines of TypeScript conventions, a testing-patterns section, API design rules. True and useful, but they tax every session that doesn't touch that domain. Put them in `docs/<DOMAIN>.md` or a skill and add one breadcrumb line. Also check for **contradictions** with existing lines before adding anything — conflicting instructions accumulated over time are worse than either instruction alone; surface the pair and let the user pick.
+```markdown
+- Before writing or changing tests, read `docs/TESTING.md` (fixtures, the DB mock, naming)
+```
+Why: the wording decides whether the agent opens the doc. It names the task that should send the agent there and what it will find, with the path in backticks rather than as an `@` import.
 
 ## Diff format for proposals
 
@@ -95,20 +77,18 @@ Bad in the root: ten lines of TypeScript conventions, a testing-patterns section
 ```
 ```
 
-For pure deletions, still state the why ("mirrors package.json scripts 1:1; drift risk, no signal").
+For pure deletions, still state the why ("DERIVABLE: mirrors package.json scripts 1:1").
 
 ## Validation checklist
 
 Before finalizing:
 
-- [ ] Every kept/added claim verified against the file it's about, this session
-- [ ] Every referenced path existence-checked
-- [ ] No line derivable from one Read of package.json / README / `ls`
-- [ ] No aspirational or audience-mismatched content
-- [ ] No domain-scoped rule blocks in the root — relocated with breadcrumbs instead
-- [ ] Relocated docs are consolidated — none so small (~<10 lines) it should merge into a sibling
-- [ ] Spot-check one breadcrumb: would an agent following it actually find the guidance it needs?
-- [ ] No new line contradicts an existing line
-- [ ] Known traps in this repo are covered
+- [ ] Every kept or added claim verified against the file it's about, this session; every path exists; every `@` import resolves
+- [ ] Nothing FILLER or DERIVABLE left in the root; directory maps deleted whole, not slimmed
+- [ ] RELOCATABLE lines moved, not deleted; relocated docs consolidated — none so small (~<10 lines) it should merge into a sibling
+- [ ] Every breadcrumb names the task that should open it and what's inside, as a plain path; spot-check one: would an agent following it find what it needs?
+- [ ] Every ban sits beside its target; emphasis on one line at most
+- [ ] No new line contradicts an existing one, in this file or one that loads beside it
+- [ ] (Audit) every missing-trap item in Phase 3 looked at
 - [ ] Root file got shorter, or longer only by trap/gotcha lines
-- [ ] If a CLAUDE.md exists, it starts with `@AGENTS.md` and holds only Claude-specific lines — no bare pointer, no duplicate
+- [ ] Every CLAUDE.md, at any level, starts with `@AGENTS.md` (or is a symlink to it) and holds only Claude-specific lines — no bare pointer unless a keep condition in loading.md holds, no duplicate

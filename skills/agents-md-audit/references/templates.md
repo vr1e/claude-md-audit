@@ -12,7 +12,7 @@ Claude Code reads `AGENTS.md` directly (v2.1.277+), so the default layout has no
 - <Claude-specific instruction, e.g. skill/hook/permission guidance>
 ```
 
-A `CLAUDE.md` that would hold only `@AGENTS.md` should not be created. If one already exists it is a deletion candidate — see the keep conditions in SKILL.md.
+A `CLAUDE.md` that would hold only `@AGENTS.md` should not be created. If one already exists it is a deletion candidate — see the keep conditions in loading.md.
 
 ## AGENTS.md — slim template
 
@@ -37,6 +37,7 @@ Every section is optional. The best AGENTS.md files are 20–60 lines. When in d
 
 - <pattern with a why, e.g. "SVGs: import with `?url` for URLs, plain import = SVGR component">
 - <ordering constraint, init dependency>
+- <branch naming, commit or PR format, when the repo has a convention>
 
 ## Gotchas
 
@@ -44,23 +45,27 @@ Every section is optional. The best AGENTS.md files are 20–60 lines. When in d
 
 ## Deeper guidance
 
-- For <domain> conventions, see `docs/<DOMAIN>.md`
+- Before <task that needs it>, read `docs/<DOMAIN>.md` (<what's inside>)
 ```
 
-Breadcrumbs are one conversational line each — no "ALWAYS read", no all-caps forcing. Referenced docs load only when relevant and can reference deeper docs in turn.
+Each breadcrumb is one line that passes the pointer check in SKILL.md Phase 3. Referenced docs load only when relevant and can reference deeper docs in turn.
 
 **A near-empty AGENTS.md is a valid outcome.** If the repo has no traps, the correct file is just the one-line description, the package manager (if not npm), and any non-standard build command. Never pad a file to look complete — that is how auto-generated `/init` boilerplate is born.
 
-### What deliberately has NO section here
+The template has no section for command tables, tech stacks, directory maps, or security posture: those are DERIVABLE or FILLER (SKILL.md Phase 3). A directory whose name misleads goes under "Structure traps".
 
-- **Full command tables** mirroring `package.json` scripts — the agent reads `package.json` and treats it as the source of truth; a mirror only adds drift risk.
-- **Tech stack lists** — derivable from `package.json` + lockfile.
-- **Directory maps / architecture trees** — not even slimmed-down ones; `ls` is cheaper and never stale. A directory earns a line only when its name misleads, and that line goes under "Structure traps".
-- **Security/quality posture statements** — only enforced, code-locatable facts belong (e.g. "input validation lives in `src/helper/sanitize.ts`"), never intentions.
+## Where relocated content goes
+
+Pick the destination by the shape of the scope:
+
+- **One directory** (a package, `src/api/`) → a nested `AGENTS.md` in that directory. Claude Code loads it when it reads a file there, other agents read nested AGENTS.md too, and the root needs no breadcrumb. This holds only while no CLAUDE.md turns off AGENTS.md reading (loading.md).
+- **A cross-cutting domain** (testing patterns, TS conventions) → `docs/<DOMAIN>.md` plus a one-line breadcrumb in the root.
+- **A multi-step procedure** (release, data migration) → a skill.
+- **`.claude/rules/<topic>.md` with `paths:`** → only in a repo worked on with Claude Code alone, for a narrow glob that cuts across directories (`**/*.test.ts`, `migrations/**`). Other agents never see it, and a broad glob (`**/*.ts` in a TypeScript repo) loads in nearly every session, saving nothing.
 
 ## Relocated docs — `docs/<DOMAIN>.md`
 
-Where relocated scoped content lands. Each doc is self-contained for its topic; prefer these names when they fit, so audits across repos produce a consistent set: `TESTING.md`, `TYPESCRIPT.md`, `CODE-STYLE.md`, `GIT-WORKFLOW.md`, `API-DESIGN.md`, `ARCHITECTURE.md`.
+Each doc is self-contained for its topic; prefer these names when they fit, so audits across repos produce a consistent set: `TESTING.md`, `TYPESCRIPT.md`, `CODE-STYLE.md`, `API-DESIGN.md`, `ARCHITECTURE.md`.
 
 ```markdown
 # <Topic> Guidelines
@@ -79,8 +84,10 @@ Where relocated scoped content lands. Each doc is self-contained for its topic; 
 
 **Consolidate, don't fragment.** A relocated doc under ~10 lines usually belongs merged into a sibling, and more than ~6–8 relocated docs means the split is too granular — every extra doc is another breadcrumb taxing the root and another file to keep alive.
 
-## Monorepo
+## Nested AGENTS.md and monorepos
 
-Root AGENTS.md: cross-package traps and the one command that runs everything. Per-package AGENTS.md only when a package has traps of its own — not one per package by default.
+A directory gets its own AGENTS.md only when it has traps or rules of its own — not one per package by default. In a monorepo the root holds cross-package traps and the one command that runs everything.
 
-Nested AGENTS.md files **merge with the root** in the agent's context: never repeat root content at package level, never link back up to the root ("see root AGENTS.md" — it's already loaded), and keep each level scoped to what's relevant there. Domain-scoped rules (per-language conventions, testing patterns) still belong in referenced docs, not in either level.
+Nested AGENTS.md files **merge with the root** in the agent's context: never repeat root content at a nested level, never link back up to the root ("see root AGENTS.md" — it's already loaded), and keep each level scoped to what's relevant there. Cross-cutting domain rules (per-language conventions, testing patterns) still go to `docs/<DOMAIN>.md`, not to either level.
+
+Keep CLAUDE.md files out of subdirectories. A nested CLAUDE.md hides its directory's AGENTS.md unless it imports it, and launching Claude from that directory drops the root AGENTS.md; once one exists, follow the monorepo rule in loading.md.
