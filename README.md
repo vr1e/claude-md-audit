@@ -16,7 +16,7 @@ A personalized rebuild of Anthropic's official [claude-md-management](https://gi
   (Claude-specific guidance only)
   ```
 
-  The skill migrates full CLAUDE.md files into AGENTS.md and flags leftover `@AGENTS.md`-only pointers for removal, keeping them where a session still can't read AGENTS.md directly (Claude Code older than 2.1.277, or older than 2.1.281 on Bedrock or with telemetry off; the built-in AGENTS.md plugin disabled; a `CLAUDE.local.md` in use).
+  The skill migrates full CLAUDE.md files into AGENTS.md and deletes leftover `@AGENTS.md`-only pointers, keeping them only where a session still can't read AGENTS.md directly (Claude Code older than 2.1.277, or older than 2.1.281 on Bedrock or with telemetry off; the built-in AGENTS.md plugin disabled; a `CLAUDE.local.md` in use).
 
 - **It checks what actually reaches Claude.** A CLAUDE.md above the repo or inside a package silently turns off AGENTS.md; an `@docs/…` breadcrumb loads the very doc it was meant to defer; `.claude/rules/` files load next to AGENTS.md unseen. The audit looks for all three.
 

@@ -12,7 +12,7 @@ Claude Code reads `AGENTS.md` directly (v2.1.277+), so the default layout has no
 - <Claude-specific instruction, e.g. skill/hook/permission guidance>
 ```
 
-A `CLAUDE.md` that would hold only `@AGENTS.md` should not be created. If one already exists it is a deletion candidate — see the keep conditions in loading.md.
+A `CLAUDE.md` that would hold only `@AGENTS.md` should not be created. If one already exists, delete it unless a keep condition in loading.md holds.
 
 ## AGENTS.md — slim template
 

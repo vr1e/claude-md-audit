@@ -23,7 +23,7 @@ A bare pointer is redundant once every session that opens the repo reads AGENTS.
 - A `CLAUDE.local.md` is in use: it turns the switch off, and the pointer brings AGENTS.md back
 - The team relies on something that fires only for CLAUDE.md: `InstructionsLoaded` hooks, `--add-dir` with `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD`, or an AGENTS.md import of a file outside the repo (it loads only if external imports were already approved, and Claude never prompts for it)
 
-Settle the user's side yourself (`claude --version`, `~/.claude/settings.json`) and ask only about teammates.
+Settle the user's side yourself (`claude --version`, `~/.claude/settings.json`). Teammates you can't check: list their conditions in the report as the reason to object, and delete the pointer with the rest of the approved edits unless the user names one that holds. Never leave it in place just because nobody answered.
 
 ## Imports
 

@@ -21,14 +21,14 @@ Audit and improve agent context files so they are **slim, verified, and worth th
   - <Claude-specific instruction>
   ```
 
-- **A bare pointer** — a `CLAUDE.md` holding nothing but `@AGENTS.md` — is a leftover from before native support. It is harmless (Claude never reads `AGENTS.md` twice) but it is a file kept alive for no gain, so propose removing it unless one of the keep conditions in [references/loading.md](references/loading.md) holds.
+- **A bare pointer** — a `CLAUDE.md` holding nothing but `@AGENTS.md` — is a leftover from before native support. It is harmless (Claude never reads `AGENTS.md` twice) but it is a file kept alive for no gain, so delete it unless one of the keep conditions in [references/loading.md](references/loading.md) holds.
 
   Read [references/loading.md](references/loading.md) before choosing a layout action: which file turns Claude Code's reading of AGENTS.md on or off, nested and parent-directory CLAUDE.md files, imports, and `.claude/rules/`. Apply this whatever the starting state:
 
   | Starting state | Action |
   |---|---|
   | AGENTS.md only | Audit it. Create nothing else. |
-  | AGENTS.md + bare pointer CLAUDE.md | Audit AGENTS.md; propose deleting the pointer (check the keep conditions first) |
+  | AGENTS.md + bare pointer CLAUDE.md | Audit AGENTS.md; delete the pointer unless a keep condition holds |
   | CLAUDE.md is a symlink to AGENTS.md | Audit AGENTS.md and edit it, never the link. Leaving or deleting the link are both fine; replace it with an `@AGENTS.md` import when anyone works on Windows |
   | CLAUDE.md tells Claude in prose to read AGENTS.md | Delete it, or swap the sentence for `@AGENTS.md` when Claude-specific lines remain — prose loads AGENTS.md only if Claude decides to open it |
   | Full CLAUDE.md only | Migrate content → AGENTS.md. Delete CLAUDE.md, or reduce it to `@AGENTS.md` + the Claude-specific residue if there is any |
